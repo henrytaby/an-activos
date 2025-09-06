@@ -22,3 +22,4 @@ class Activo:
     institucion: Optional[str] = None
     archivo: Optional[str] = None
     encargado: Optional[str] = None
+    fecha_registro: Optional[str] = None

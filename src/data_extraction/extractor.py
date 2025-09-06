@@ -1,6 +1,9 @@
 import os
 import pandas as pd
+import pytz
 from typing import Iterator, Dict, Any, Tuple, List, Set
+
+from src.config import settings
 
 class ExcelExtractor:
     def __init__(self, data_folder: str, log_file_path: str):
@@ -45,7 +48,6 @@ class ExcelExtractor:
                 if f.endswith(('.xlsx', '.xls')) and not f.startswith('~$')
             ]
 
-            # Filtrar archivos que ya han sido procesados
             files_to_process = [f for f in available_files if f not in self.processed_files]
 
             if not files_to_process:
@@ -60,9 +62,18 @@ class ExcelExtractor:
                 
                 df = pd.read_excel(file_path, header=1, dtype=str)
                 
-                # --- INICIO DE TRANSFORMACIONES ---
                 df.columns = self._normalize_columns(df.columns)
                 df.rename(columns={'anterior': 'codigo_anterior', 'nuevo': 'codigo_nuevo'}, inplace=True)
+
+                if 'fecha_registro' in df.columns:
+                    naive_datetimes = pd.to_datetime(df['fecha_registro'], format='%d/%m/%Y', errors='coerce')
+                    try:
+                        tz = pytz.timezone(settings.TIMEZONE)
+                        df['fecha_registro'] = naive_datetimes.dt.tz_localize(tz)
+                    except pytz.UnknownTimeZoneError:
+                        print(f"ADVERTENCIA: Zona horaria '{settings.TIMEZONE}' no encontrada. Las fechas se guardarán sin zona horaria.")
+                        df['fecha_registro'] = naive_datetimes
+
                 if 'codigo_anterior' in df.columns:
                     df['codigo_anterior'] = df['codigo_anterior'].apply(self._clean_sc)
                 if 'codigo_nuevo' in df.columns:
@@ -87,16 +98,14 @@ class ExcelExtractor:
                     df.loc[df['saf'] == False, 'asignado_a'] = None
                 if 'nro' not in df.columns:
                     print(f"Advertencia: El archivo {file_name} no tiene columna 'nro'. Saltando archivo.")
-                    processed_filenames.append(file_name) # Marcar como procesado aunque se omita
+                    processed_filenames.append(file_name)
                     continue
                 df['nro'] = pd.to_numeric(df['nro'], errors='coerce')
                 df.dropna(subset=['nro'], inplace=True)
                 df['nro'] = df['nro'].astype(int)
                 df['archivo'] = file_name
                 df = df.where(pd.notna(df), None)
-                # --- FIN DE TRANSFORMACIONES ---
 
-                # Añadir a la lista de procesados solo si tuvo datos válidos
                 if not df.empty:
                     processed_filenames.append(file_name)
                     for record in df.to_dict('records'):
@@ -104,7 +113,6 @@ class ExcelExtractor:
                         all_records.append(clean_record)
                 else:
                     print(f"Advertencia: El archivo {file_name} no contenía registros válidos después de la limpieza.")
-                    # También lo marcamos como procesado para no reintentarlo
                     processed_filenames.append(file_name)
 
             return all_records, processed_filenames
