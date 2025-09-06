@@ -129,6 +129,8 @@ dmypy.json
 # Ignore data files but not the directory structure
 /datos/*
 !/datos/usuarios/.gitkeep
+/datos/saf/*
+!/datos/saf/.gitkeep
 
 # Ignore execution-specific log files
 /datos/.processed_log.txt
