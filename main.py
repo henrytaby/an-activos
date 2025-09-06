@@ -2,31 +2,43 @@ import typer
 from typing_extensions import Annotated
 
 from src.data_extraction.extractor import ExcelExtractor
+from src.data_storage.writer import MongoWriter
 from src.data_cleaning.cleaner import DataCleaner
 
 app = typer.Typer()
 
-@app.command("extract", help="Extrae datos de archivos Excel y los carga en MongoDB.")
+@app.command("extract", help="Extrae datos de archivos Excel nuevos y los carga en MongoDB.")
 def run_extraction(
     data_folder: Annotated[str, typer.Option(help="Carpeta que contiene los archivos Excel.")] = "datos/usuarios"
 ):
     """
     Comando para ejecutar el pipeline de extracción y carga de datos.
     """
+    LOG_FILE = "datos/.processed_log.txt"
     print("--- INICIO DEL PROCESO DE EXTRACCIÓN Y CARGA ---")
     
-    extractor = ExcelExtractor(data_folder=data_folder)
-    data = list(extractor.extract())
+    extractor = ExcelExtractor(data_folder=data_folder, log_file_path=LOG_FILE)
+    data, new_files_processed = extractor.extract()
 
     if not data:
-        print("No se extrajeron datos. Finalizando el proceso.")
+        print("No se extrajeron nuevos datos. Finalizando el proceso.")
         print("--- FIN DEL PROCESO ---")
         return
 
-    print(f"Se extrajeron un total de {len(data)} registros válidos de todos los archivos.")
+    print(f"Se extrajeron un total de {len(data)} registros válidos de los archivos nuevos.")
 
     writer = MongoWriter()
     writer.write(data)
+
+    # Si la escritura fue exitosa, registrar los archivos procesados
+    if new_files_processed:
+        try:
+            with open(LOG_FILE, 'a') as f:
+                for filename in new_files_processed:
+                    f.write(f"{filename}\n")
+            print(f"Se registraron {len(new_files_processed)} archivos como procesados.")
+        except Exception as e:
+            print(f"ADVERTENCIA: No se pudo escribir en el archivo de registro: {e}")
 
     print("--- FIN DEL PROCESO ---")
 
@@ -43,9 +55,6 @@ def run_cleaning(
         cleaner.clean_codigo_anterior()
     elif field == "institucion":
         cleaner.fill_institucion()
-    # Puedes añadir más sentencias 'elif' aquí para otros campos en el futuro
-    # elif field == "otro_campo":
-    #     cleaner.clean_otro_campo()
     else:
         print(f"Error: No hay un proceso de limpieza definido para el campo '{field}'.")
         print("Campos disponibles para limpieza: [codigo_anterior, institucion]")
