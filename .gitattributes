@@ -1,0 +1,14 @@
+# =============================================================================
+#  CONFIGURACIÓN DE GIT ATTRIBUTES PARA CONSISTENCIA ENTRE SO
+# =============================================================================
+#
+# El objetivo de este archivo es forzar un estilo de fin de línea consistente
+# para todos los desarrolladores que trabajen en este repositorio.
+#
+# La configuración `eol=lf` es ideal para equipos que trabajan principalmente
+# en entornos Linux o macOS, asegurando que no haya problemas con scripts
+# o herramientas que esperan finales de línea de tipo Unix.
+
+# Forzar que todos los archivos que Git considere de texto usen finales de línea LF (Unix).
+# Git convertirá automáticamente los finales CRLF (Windows) a LF al hacer commit.
+* text eol=lf
