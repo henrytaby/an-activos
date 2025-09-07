@@ -131,6 +131,8 @@ dmypy.json
 !/datos/usuarios/.gitkeep
 /datos/saf/*
 !/datos/saf/.gitkeep
+/datos/persona/*
+!/datos/persona/.gitkeep
 
 # Ignore execution-specific log files
 /datos/.processed_log.txt
