@@ -101,6 +101,27 @@ class DataCleaner:
 
         print("--- Iniciando limpieza del campo 'grupo' ---")
         
+        # Primero, limpiar saltos de línea en el campo 'grupo' en toda la colección
+        print("Paso 1: Limpiando saltos de línea en el campo 'grupo'.")
+        query_newlines = {"grupo": {"$regex": "\n|\r"}}
+        cursor = self.collection.find(query_newlines)
+        
+        cleaned_count = 0
+        for doc in cursor:
+            original_grupo = doc.get("grupo")
+            if isinstance(original_grupo, str):
+                # Reemplazar saltos de línea y múltiples espacios
+                cleaned_grupo = ' '.join(original_grupo.split())
+                if cleaned_grupo != original_grupo:
+                    self.collection.update_one(
+                        {"_id": doc["_id"]},
+                        {"$set": {"grupo": cleaned_grupo}}
+                    )
+                    cleaned_count += 1
+        print(f"Se limpiaron saltos de línea en {cleaned_count} documentos.")
+
+        # Segundo, ejecutar los mapeos
+        print("\nPaso 2: Ejecutando mapeos de 'grupo' a 'descripcion'.")
         mappings = settings.GRUPO_MAPPINGS
         if not mappings:
             print("No hay mapeos definidos para 'grupo' en la configuración. Finalizando.")
@@ -131,6 +152,10 @@ class DataCleaner:
                     new_descripcion = f"{original_grupo}, {original_descripcion}"
                 else:
                     new_descripcion = original_grupo
+                
+                # Limpiar saltos de línea en la nueva descripción también
+                if isinstance(new_descripcion, str):
+                    new_descripcion = ' '.join(new_descripcion.split())
 
                 self.collection.update_one(
                     {"_id": doc["_id"]},
@@ -143,8 +168,7 @@ class DataCleaner:
                 )
                 total_updated += 1
         
-        print(f"\n--- Resumen de la limpieza de 'grupo' ---")
-        print(f"Total de documentos actualizados: {total_updated}")
+        print(f"\nSe actualizaron {total_updated} documentos basados en mapeos.")
         print("Limpieza de 'grupo' completada.")
 
     @staticmethod
