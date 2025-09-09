@@ -108,18 +108,24 @@ def run_cleaning(
     if field == "codigo_anterior":
         cleaner.clean_codigo_anterior()
     elif field == "institucion":
-        cleaner.fill_institucion()
+        cleaner.clean_institucion()
     elif field == "grupo":
         cleaner.clean_grupo()
+    elif field == "ubicacion":
+        cleaner.clean_ubicacion()
+    elif field == "area":
+        cleaner.clean_area()
     else:
         print(f"Error: No hay limpieza definida para el campo '{field}'.")
-        print("Campos disponibles: [codigo_anterior, institucion, grupo]")
+        print("Campos disponibles: [codigo_anterior, institucion, grupo, ubicacion, area]")
     print("--- FIN DEL PROCESO DE LIMPIEZA ---")
 
 @app.command("consolidate", help="Consolida los datos de SAF e Inventario en una nueva colección.")
-def run_consolidation():
+def run_consolidation(
+    delete_existing: Annotated[bool, typer.Option("--delete-existing", help="Borrar los datos existentes en la colección de destino antes de consolidar.")] = False
+):
     consolidator = Consolidator()
-    consolidator.consolidate()
+    consolidator.consolidate(delete_existing=delete_existing)
 
 if __name__ == "__main__":
     app()

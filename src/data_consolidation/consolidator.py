@@ -21,16 +21,18 @@ class Consolidator:
             print(f"Error al conectar con MongoDB: {e}")
             self.client = None
 
-    def consolidate(self):
+    def consolidate(self, delete_existing: bool = False):
         if not self.client:
             print("No se puede consolidar, no hay conexión a MongoDB.")
             return
 
         print("--- INICIO DEL PROCESO DE CONSOLIDACIÓN ---")
         
-        # Limpiar colección consolidada existente
-        self.consolidado_collection.delete_many({})
-        print(f"Colección '{self.consolidado_collection_name}' limpiada.")
+        if delete_existing:
+            if self.consolidado_collection_name in self.db.list_collection_names():
+                print(f"Borrando datos existentes de la colección '{self.consolidado_collection_name}'...")
+                self.consolidado_collection.delete_many({})
+                print("Datos borrados exitosamente.")
 
         # Procesar Grupo 1
         activos_grupo_1, saf_codigos_procesados = self._procesar_grupo_1()

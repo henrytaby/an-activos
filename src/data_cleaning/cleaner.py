@@ -59,6 +59,195 @@ class DataCleaner:
         print(f"Documentos omitidos: {skipped_count}")
         print("Limpieza de 'codigo_anterior' completada.")
 
+    def clean_institucion(self):
+        if not self.client:
+            print("No se puede limpiar, no hay conexión a MongoDB.")
+            return
+
+        print("--- Iniciando limpieza del campo 'institucion' ---")
+        
+        # Paso 1: Limpiar espacios y saltos de línea
+        print("Paso 1: Limpiando espacios y saltos de línea en 'institucion'.")
+        query_format = {"institucion": {"$exists": True, "$ne": None}}
+        cursor = self.collection.find(query_format)
+        
+        cleaned_count = 0
+        for doc in cursor:
+            original_institucion = doc.get("institucion")
+            if isinstance(original_institucion, str):
+                cleaned_institucion = ' '.join(original_institucion.split()).strip()
+                if cleaned_institucion != original_institucion:
+                    self.collection.update_one(
+                        {"_id": doc["_id"]},
+                        {"$set": {"institucion": cleaned_institucion}}
+                    )
+                    cleaned_count += 1
+        print(f"Se limpiaron espacios y/o saltos de línea en {cleaned_count} documentos.")
+
+        # Paso 1.5: Convertir cadenas vacías a null
+        print("\nPaso 1.5: Convirtiendo valores vacíos de 'institucion' a null.")
+        query_empty = {"institucion": ""}
+        update_empty_to_null = {"$set": {"institucion": None}}
+        result_empty = self.collection.update_many(query_empty, update_empty_to_null)
+        print(f"Se convirtieron {result_empty.modified_count} campos 'institucion' vacíos a null.")
+
+        # 2. Aplicar los reemplazos desde la configuración
+        print("\nPaso 2: Ejecutando reemplazos para 'institucion'.")
+        mappings = settings.INSTITUCION_MAPPINGS
+        if not mappings:
+            print("No hay mapeos definidos para 'institucion' en la configuración. Finalizando.")
+            return
+
+        total_updated = 0
+        for mapping in mappings:
+            search_term = mapping.get("busqueda")
+            replace_term = mapping.get("remplazar")
+
+            if replace_term is None:
+                continue
+
+            db_replace_term = None if replace_term == "" else replace_term
+
+            query = {"institucion": search_term}
+            update = {"$set": {"institucion": db_replace_term}}
+            
+            result = self.collection.update_many(query, update)
+            
+            if result.modified_count > 0:
+                search_log = "None" if search_term is None else search_term
+                replace_log = "None" if db_replace_term is None else db_replace_term
+                print(f"Se actualizaron {result.modified_count} documentos para el mapeo: '{search_log}' -> '{replace_log}'")
+                total_updated += result.modified_count
+        
+        print(f"\nSe actualizaron un total de {total_updated} documentos basados en mapeos.")
+        print("Limpieza de 'institucion' completada.")
+
+    def clean_ubicacion(self):
+        if not self.client:
+            print("No se puede limpiar, no hay conexión a MongoDB.")
+            return
+
+        print("--- Iniciando limpieza del campo 'ubicacion' ---")
+        
+        # Paso 1: Limpiar espacios y saltos de línea
+        print("Paso 1: Limpiando espacios y saltos de línea en 'ubicacion'.")
+        query_format = {"ubicacion": {"$exists": True, "$ne": None}}
+        cursor = self.collection.find(query_format)
+        
+        cleaned_count = 0
+        for doc in cursor:
+            original_ubicacion = doc.get("ubicacion")
+            if isinstance(original_ubicacion, str):
+                cleaned_ubicacion = ' '.join(original_ubicacion.split()).strip()
+                if cleaned_ubicacion != original_ubicacion:
+                    self.collection.update_one(
+                        {"_id": doc["_id"]},
+                        {"$set": {"ubicacion": cleaned_ubicacion}}
+                    )
+                    cleaned_count += 1
+        print(f"Se limpiaron espacios y/o saltos de línea en {cleaned_count} documentos.")
+
+        # Paso 1.5: Convertir cadenas vacías a null
+        print("\nPaso 1.5: Convirtiendo valores vacíos de 'ubicacion' a null.")
+        query_empty = {"ubicacion": ""}
+        update_empty_to_null = {"$set": {"ubicacion": None}}
+        result_empty = self.collection.update_many(query_empty, update_empty_to_null)
+        print(f"Se convirtieron {result_empty.modified_count} campos 'ubicacion' vacíos a null.")
+
+        # 2. Aplicar los reemplazos desde la configuración
+        print("\nPaso 2: Ejecutando reemplazos para 'ubicacion'.")
+        mappings = settings.UBICACION_MAPPINGS
+        if not mappings:
+            print("No hay mapeos definidos para 'ubicacion' en la configuración. Finalizando.")
+            return
+
+        total_updated = 0
+        for mapping in mappings:
+            search_term = mapping.get("busqueda")
+            replace_term = mapping.get("remplazar")
+
+            if replace_term is None:
+                continue
+
+            db_replace_term = None if replace_term == "" else replace_term
+
+            query = {"ubicacion": search_term}
+            update = {"$set": {"ubicacion": db_replace_term}}
+            
+            result = self.collection.update_many(query, update)
+            
+            if result.modified_count > 0:
+                search_log = "None" if search_term is None else search_term
+                replace_log = "None" if db_replace_term is None else db_replace_term
+                print(f"Se actualizaron {result.modified_count} documentos para el mapeo: '{search_log}' -> '{replace_log}'")
+                total_updated += result.modified_count
+        
+        print(f"\nSe actualizaron un total de {total_updated} documentos basados en mapeos.")
+        print("Limpieza de 'ubicacion' completada.")
+
+    def clean_area(self):
+        if not self.client:
+            print("No se puede limpiar, no hay conexión a MongoDB.")
+            return
+
+        print("--- Iniciando limpieza del campo 'area' ---")
+        
+        # Paso 1: Limpiar espacios y saltos de línea
+        print("Paso 1: Limpiando espacios y saltos de línea en 'area'.")
+        query_format = {"area": {"$exists": True, "$ne": None}}
+        cursor = self.collection.find(query_format)
+        
+        cleaned_count = 0
+        for doc in cursor:
+            original_area = doc.get("area")
+            if isinstance(original_area, str):
+                cleaned_area = ' '.join(original_area.split()).strip()
+                if cleaned_area != original_area:
+                    self.collection.update_one(
+                        {"_id": doc["_id"]},
+                        {"$set": {"area": cleaned_area}}
+                    )
+                    cleaned_count += 1
+        print(f"Se limpiaron espacios y/o saltos de línea en {cleaned_count} documentos.")
+
+        # Paso 1.5: Convertir cadenas vacías a null
+        print("\nPaso 1.5: Convirtiendo valores vacíos de 'area' a null.")
+        query_empty = {"area": ""}
+        update_empty_to_null = {"$set": {"area": None}}
+        result_empty = self.collection.update_many(query_empty, update_empty_to_null)
+        print(f"Se convirtieron {result_empty.modified_count} campos 'area' vacíos a null.")
+
+        # 2. Aplicar los reemplazos desde la configuración
+        print("\nPaso 2: Ejecutando reemplazos para 'area'.")
+        mappings = settings.AREA_MAPPINGS
+        if not mappings:
+            print("No hay mapeos definidos para 'area' en la configuración. Finalizando.")
+            return
+
+        total_updated = 0
+        for mapping in mappings:
+            search_term = mapping.get("busqueda")
+            replace_term = mapping.get("remplazar")
+
+            if replace_term is None:
+                continue
+
+            db_replace_term = None if replace_term == "" else replace_term
+
+            query = {"area": search_term}
+            update = {"$set": {"area": db_replace_term}}
+            
+            result = self.collection.update_many(query, update)
+            
+            if result.modified_count > 0:
+                search_log = "None" if search_term is None else search_term
+                replace_log = "None" if db_replace_term is None else db_replace_term
+                print(f"Se actualizaron {result.modified_count} documentos para el mapeo: '{search_log}' -> '{replace_log}'")
+                total_updated += result.modified_count
+        
+        print(f"\nSe actualizaron un total de {total_updated} documentos basados en mapeos.")
+        print("Limpieza de 'area' completada.")
+
     def fill_institucion(self):
         if not self.client:
             print("No se puede procesar, no hay conexión a MongoDB.")
