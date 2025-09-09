@@ -37,6 +37,10 @@ GRUPO_MAPPINGS = [
     {"busqueda": "COLCHONES", "remplazar": "COLCHON"},
     {"busqueda": "DISPENSADOR", "remplazar": "DISPENSADOR DE AGUA"},
     {"busqueda": "DISPENSADORDE AGUA", "remplazar": "DISPENSADOR DE AGUA"},
+    {"busqueda": "BEBEDERO E AGUA", "remplazar": "DISPENSADOR DE AGUA"},
+    
+    
+
     {"busqueda": "IMPRESORA A LASER", "remplazar": "IMPRESORA"},
     {"busqueda": "MEZON DE METAL", "remplazar": "MESON"},
     {"busqueda": "GABETERO", "remplazar": "GAVETERO"},
@@ -46,6 +50,16 @@ GRUPO_MAPPINGS = [
     {"busqueda": "APARATO TELÉFONO", "remplazar": "TELEFONO"},
     {"busqueda": "RELOJ BIOMETRICO", "remplazar": "EQUIPO BIOMETRICO"},
     {"busqueda": "TELÉFONO", "remplazar": "TELEFONO"},
+    {"busqueda": "TUBO DE OXÍGENO", "remplazar": "TUBO DE OXIGENO"},
+
+    {"busqueda": "VITRINA DE MADERA", "remplazar": "VITRINA"},
+
+    {"busqueda": "CAMAROTE METALICO", "remplazar": "CAMAROTE"},
+    {"busqueda": "CAMAROTE METALICO.", "remplazar": "CAMAROTE"},
+    {"busqueda": "CUCHETA", "remplazar": "CAMAROTE"},
+    {"busqueda": "LAVADORAS", "remplazar": "LAVADORA"},
+    {"busqueda": "MESA DE MADERA", "remplazar": "MESA"},
+
     
     
      
