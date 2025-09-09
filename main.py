@@ -9,6 +9,7 @@ from src.data_extraction.saf_extractor import SafExcelExtractor
 from src.data_extraction.persona_extractor import PersonaExcelExtractor
 from src.data_storage.writer import MongoWriter
 from src.data_cleaning.cleaner import DataCleaner
+from src.data_consolidation.consolidator import Consolidator
 
 app = typer.Typer()
 
@@ -114,6 +115,11 @@ def run_cleaning(
         print(f"Error: No hay limpieza definida para el campo '{field}'.")
         print("Campos disponibles: [codigo_anterior, institucion, grupo]")
     print("--- FIN DEL PROCESO DE LIMPIEZA ---")
+
+@app.command("consolidate", help="Consolida los datos de SAF e Inventario en una nueva colección.")
+def run_consolidation():
+    consolidator = Consolidator()
+    consolidator.consolidate()
 
 if __name__ == "__main__":
     app()
